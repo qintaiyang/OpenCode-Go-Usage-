@@ -1,0 +1,44 @@
+{
+  "name": "opencode-go",
+  "version": "1.0.0",
+  "description": "OpenCode Go usage tray app",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "check:usage": "node scripts/check-usage-json.js",
+    "check:usage:runtime": "node scripts/check-usage-runtime.js",
+    "build:win": "electron-builder --win nsis"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^42.3.0",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "local.opencode-go-usage",
+    "productName": "OpenCode Go Usage",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "src/main/main.js"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

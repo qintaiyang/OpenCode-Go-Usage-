@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Runtime config (contains auth cookie + workspace ID)
+config.json
+.opencode_auth
+
+# Browser profiles (login sessions)
+.chrome-profile/
+
+# Build output
+dist/
+release/
+
+# Private development plans and notes
+.private/
+
+# OS files
+.DS_Store
+Thumbs.db
