@@ -2,12 +2,26 @@ const { app, BrowserWindow, Tray, Menu, ipcMain, shell, nativeImage } = require(
 const path = require('path');
 const {
   loadConfig,
-  saveConfig,
   setConfigPaths,
   getConfigPath,
   migrateConfigIfNeeded
 } = require('../core/config-service');
 const { fetchUsage } = require('../core/usage-service');
+const {
+  listAccounts,
+  getActiveSafeAccount,
+  getAccountOrThrow,
+  switchAccount,
+  upsertAccount,
+  deleteAccount
+} = require('../core/account-service');
+const {
+  CAPABILITIES: API_KEY_CAPABILITIES,
+  listApiKeys,
+  getApiKeyForCopy,
+  createApiKey,
+  removeApiKey
+} = require('../core/api-key-service');
 
 // Prevent multiple instances
 const gotTheLock = app.requestSingleInstanceLock();
@@ -164,8 +178,125 @@ async function handleTrayShowLoginPanel() {
 ipcMain.handle('usage:get', async () => {
   try {
     const cfg = loadConfig();
+    if (!cfg.accountId) {
+      throw new Error('No account configured. Please add an account.');
+    }
     const usage = await fetchUsage({ auth: cfg.auth, workspaceId: cfg.workspaceId });
-    return { ok: true, usage };
+    return { ok: true, usage, account: getActiveSafeAccount() };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+// ============================================================
+// Account IPC Handlers
+// ============================================================
+
+ipcMain.handle('accounts:list', () => {
+  try {
+    return { ok: true, ...listAccounts() };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+ipcMain.handle('accounts:switch', async (_event, accountId) => {
+  try {
+    const account = switchAccount(String(accountId || ''));
+    const cfg = loadConfig();
+    const usage = cfg.hasAuth
+      ? await fetchUsage({ auth: cfg.auth, workspaceId: cfg.workspaceId })
+      : null;
+    return { ok: true, account, usage };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+ipcMain.handle('accounts:save', async (_event, payload) => {
+  try {
+    const input = payload || {};
+    const account = upsertAccount({
+      id: input.id,
+      name: input.name,
+      workspaceId: input.workspaceId
+    });
+    return { ok: true, account };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+ipcMain.handle('accounts:delete', (_event, accountId) => {
+  try {
+    return { ok: true, ...deleteAccount(String(accountId || '')) };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+// ============================================================
+// API Key IPC Handlers
+// ============================================================
+
+ipcMain.handle('api-keys:capabilities', () => {
+  return { ok: true, capabilities: API_KEY_CAPABILITIES };
+});
+
+ipcMain.handle('api-keys:list', async (_event, accountId) => {
+  try {
+    const { account } = getAccountOrThrow(accountId);
+    const keys = await listApiKeys({ auth: account.auth, workspaceId: account.workspaceId });
+    return { ok: true, keys };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+ipcMain.handle('api-keys:copy', async (_event, payload) => {
+  try {
+    const { accountId, keyId } = payload || {};
+    const { account } = getAccountOrThrow(accountId);
+    const key = await getApiKeyForCopy({ auth: account.auth, workspaceId: account.workspaceId, keyId });
+    require('electron').clipboard.writeText(key);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+ipcMain.handle('api-keys:create', async (_event, payload) => {
+  try {
+    const { accountId, name } = payload || {};
+    const { account } = getAccountOrThrow(accountId);
+    const created = await createApiKey({ auth: account.auth, workspaceId: account.workspaceId, name });
+    if (created && created.key) {
+      require('electron').clipboard.writeText(created.key);
+    }
+    return {
+      ok: true,
+      key: created
+        ? {
+          id: created.id,
+          name: created.name,
+          keyDisplay: created.keyDisplay || (created.key ? `${created.key.slice(0, 7)}...${created.key.slice(-4)}` : ''),
+          email: created.email || '',
+          hasFullKey: Boolean(created.key),
+          copiedToClipboard: Boolean(created.key)
+        }
+        : null
+    };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+ipcMain.handle('api-keys:remove', async (_event, payload) => {
+  try {
+    const { accountId, keyId } = payload || {};
+    const { account } = getAccountOrThrow(accountId);
+    await removeApiKey({ auth: account.auth, workspaceId: account.workspaceId, keyId });
+    return { ok: true };
   } catch (err) {
     return { ok: false, error: err.message };
   }
@@ -241,51 +372,33 @@ ipcMain.handle('auth:save-cookie', async (_event, params) => {
   try {
     // Support both old string format and new object format
     const rawCookie = typeof params === 'string' ? params : params?.rawCookie;
-    const wid = params?.workspaceId || loadConfig().workspaceId;
+    const requestedAccountId = typeof params === 'string' ? '' : params?.accountId;
+    const name = typeof params === 'string' ? '' : params?.name;
+    const wid = (typeof params === 'string' ? '' : params?.workspaceId) || loadConfig().workspaceId;
 
     const auth = normalizeAuthCookie(rawCookie);
 
     // Validate before saving. Do not overwrite a working cookie with a bad one.
     const usage = await fetchUsage({ auth, workspaceId: wid });
 
-    saveConfig({ auth, workspaceId: wid });
+    const account = upsertAccount({
+      id: requestedAccountId,
+      name,
+      workspaceId: wid,
+      auth
+    });
+    switchAccount(account.id);
 
     return {
       ok: true,
       usage,
+      account,
       preview: `${auth.slice(0, 8)}...${auth.slice(-4)}`,
       length: auth.length
     };
   } catch (err) {
     return { ok: false, error: err.message };
   }
-});
-
-ipcMain.handle('auth:save-workspace-id', async (_event, workspaceId) => {
-  try {
-    const wid = String(workspaceId || '').trim();
-    if (!wid) throw new Error('Workspace ID is required.');
-    if (!wid.startsWith('wrk_')) throw new Error('Workspace ID must start with wrk_.');
-
-    const cfg = loadConfig();
-    if (cfg.auth) {
-      // Validate by testing with current auth
-      await fetchUsage({ auth: cfg.auth, workspaceId: wid });
-    }
-    saveConfig({ auth: cfg.auth, workspaceId: wid });
-
-    return { ok: true, workspaceId: wid };
-  } catch (err) {
-    return { ok: false, error: err.message };
-  }
-});
-
-ipcMain.handle('config:get', () => {
-  const cfg = loadConfig();
-  return {
-    workspaceId: cfg.workspaceId,
-    hasAuth: cfg.hasAuth
-  };
 });
 
 ipcMain.handle('app:hide', () => {

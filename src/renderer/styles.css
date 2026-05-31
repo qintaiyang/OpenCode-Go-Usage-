@@ -61,7 +61,7 @@ button {
 .glass-window {
   position: relative;
   height: 100%;
-  padding: 18px;
+  padding: 16px;
   border-radius: var(--window-radius);
   -webkit-app-region: drag;
   app-region: drag;
@@ -75,7 +75,7 @@ button {
   -webkit-backdrop-filter: blur(30px) saturate(1.45);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 9px;
   overflow: hidden;
 }
 
@@ -90,10 +90,11 @@ button {
 
 .top-bar h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: 0;
+  white-space: nowrap;
 }
 
 .top-bar p {
@@ -181,8 +182,8 @@ button {
 }
 
 .hero-card {
-  border-radius: 26px;
-  padding: 18px;
+  border-radius: 24px;
+  padding: 14px;
 }
 
 .card-label,
@@ -193,8 +194,8 @@ button {
 }
 
 .hero-value {
-  margin-top: 6px;
-  font-size: 64px;
+  margin-top: 4px;
+  font-size: 52px;
   line-height: 0.95;
   font-weight: 760;
   color: #007aff;
@@ -239,8 +240,8 @@ button {
 
 .mini-card {
   min-width: 0;
-  border-radius: 22px;
-  padding: 13px;
+  border-radius: 20px;
+  padding: 11px;
 }
 
 .mini-value {
@@ -358,6 +359,10 @@ button {
   align-items: center;
 }
 
+.action-bar.account-actions {
+  grid-template-columns: 1fr 0.8fr 0.72fr 0.82fr;
+}
+
 button,
 .status-pill,
 .action-bar,
@@ -420,14 +425,15 @@ button,
 }
 
 .action-btn {
-  height: 34px;
+  height: 32px;
   border: 1px solid rgba(255, 255, 255, 0.62);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.42);
   color: rgba(20, 24, 31, 0.72);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 680;
   cursor: pointer;
+  white-space: nowrap;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -602,4 +608,230 @@ button,
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+
+/* ============================================================
+   Account Bar & Custom Menu
+   ============================================================ */
+
+.account-bar {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+.account-menu-button,
+.keys-pill {
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.44);
+  color: rgba(20, 24, 31, 0.78);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  font-size: 12px;
+  font-weight: 680;
+  cursor: pointer;
+}
+
+.account-menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 12px;
+}
+
+#account-menu-label {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.keys-pill {
+  width: 64px;
+}
+
+.account-menu-popover {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 72px;
+  z-index: 30;
+  padding: 6px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    0 18px 36px rgba(54, 82, 118, 0.22);
+  backdrop-filter: blur(30px) saturate(1.45);
+  -webkit-backdrop-filter: blur(30px) saturate(1.45);
+}
+
+.account-menu-popover[hidden] {
+  display: none;
+}
+
+.account-menu-list {
+  display: grid;
+  gap: 4px;
+}
+
+.account-menu-item {
+  width: 100%;
+  height: 32px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: rgba(20, 24, 31, 0.82);
+  text-align: left;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.account-menu-item:hover,
+.account-menu-item.active {
+  background: rgba(0, 122, 255, 0.12);
+  color: #007aff;
+}
+
+.account-menu-new {
+  margin-top: 4px;
+  border-top: 1px solid rgba(20, 24, 31, 0.08);
+}
+
+/* ============================================================
+   API Key Overlay
+   ============================================================ */
+
+.api-key-overlay {
+  position: absolute;
+  inset: 12px;
+  z-index: 22;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.70);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    0 20px 44px rgba(54, 82, 118, 0.22);
+  backdrop-filter: blur(34px) saturate(1.45);
+  -webkit-backdrop-filter: blur(34px) saturate(1.45);
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+.api-key-overlay[hidden] {
+  display: none;
+}
+
+.api-key-overlay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.api-key-overlay-header h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.api-key-overlay-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.api-key-list {
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  gap: 6px;
+}
+
+.api-key-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 30px;
+}
+
+.api-key-row.no-remove {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.api-key-label,
+.api-key-display,
+.api-key-empty {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 11px;
+}
+
+.api-key-display {
+  color: rgba(20, 24, 31, 0.52);
+  font-family: "SF Mono", Consolas, monospace;
+}
+
+.api-key-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.api-key-name-input {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+  min-width: 88px;
+  height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.42);
+  color: rgba(20, 24, 31, 0.76);
+  font-size: 11px;
+  font-weight: 650;
+  padding: 0 10px;
+  outline: none;
+}
+
+.tiny-btn {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.42);
+  color: rgba(20, 24, 31, 0.72);
+  font-size: 10px;
+  font-weight: 680;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tiny-btn.primary {
+  background: rgba(0, 122, 255, 0.88);
+  color: white;
+}
+
+.tiny-btn.danger {
+  color: #d93025;
 }

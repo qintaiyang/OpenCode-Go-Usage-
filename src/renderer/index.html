@@ -14,21 +14,33 @@
       <header class="top-bar">
         <div class="title-block">
           <h1>OpenCode Go</h1>
-          <p>Usage Monitor</p>
+          <p data-i18n="status.usage.monitor">Usage Monitor</p>
         </div>
 
         <div class="window-controls">
-          <span id="status-pill" class="status-pill">Loading</span>
-          <button id="btn-hide" class="window-hide-btn interactive-button" title="Hide to tray" aria-label="Hide to tray">&times;</button>
+          <span id="status-pill" class="status-pill" data-i18n="status.loading">Loading</span>
+          <button id="btn-hide" class="window-hide-btn interactive-button" data-i18n-title="hide.to.tray" data-i18n-aria="hide.to.tray" type="button">&times;</button>
         </div>
       </header>
 
+      <section class="account-bar">
+        <button id="account-menu-button" class="account-menu-button interactive-button" type="button" aria-haspopup="listbox" aria-expanded="false">
+          <span id="account-menu-label" data-i18n="no.account">No account</span>
+          <span class="account-menu-chevron">v</span>
+        </button>
+        <button id="btn-open-api-keys" class="keys-pill interactive-button" type="button" data-i18n="keys">Keys</button>
+        <div id="account-menu-popover" class="account-menu-popover" hidden>
+          <div id="account-menu-list" class="account-menu-list" role="listbox"></div>
+          <button id="account-menu-new" class="account-menu-item account-menu-new" type="button" data-i18n="new.account">+ New Account</button>
+        </div>
+      </section>
+
       <section class="hero-card interactive-glass" id="card-rolling">
-        <div class="card-label">Rolling Remaining</div>
+        <div class="card-label" data-i18n="rolling.remaining">Rolling Remaining</div>
         <div class="hero-value">--</div>
         <div class="hero-meta">
-          <span>Used <span id="used-rolling">--</span></span>
-          <span>Reset <span id="reset-rolling">--</span></span>
+          <span><span data-i18n="used">Used</span> <span id="used-rolling">--</span></span>
+          <span><span data-i18n="reset">Reset</span> <span id="reset-rolling">--</span></span>
         </div>
         <div class="progress-track">
           <div class="progress-fill" id="progress-rolling"></div>
@@ -37,10 +49,10 @@
 
       <section class="mini-grid">
         <article class="mini-card interactive-glass" id="card-weekly">
-          <div class="mini-label">Weekly</div>
+          <div class="mini-label" data-i18n="weekly">Weekly</div>
           <div class="mini-value">--</div>
           <div class="mini-meta">
-            <span>Used <span id="used-weekly">--</span></span>
+            <span><span data-i18n="used">Used</span> <span id="used-weekly">--</span></span>
             <span id="reset-weekly">--</span>
           </div>
           <div class="progress-track small">
@@ -49,10 +61,10 @@
         </article>
 
         <article class="mini-card interactive-glass" id="card-monthly">
-          <div class="mini-label">Monthly</div>
+          <div class="mini-label" data-i18n="monthly">Monthly</div>
           <div class="mini-value">--</div>
           <div class="mini-meta">
-            <span>Used <span id="used-monthly">--</span></span>
+            <span><span data-i18n="used">Used</span> <span id="used-monthly">--</span></span>
             <span id="reset-monthly">--</span>
           </div>
           <div class="progress-track small">
@@ -63,51 +75,73 @@
 
       <section class="detail-strip interactive-glass">
         <div class="detail-line">
-          <span id="detail-model">No model data</span>
-          <span id="detail-records">-- records</span>
+          <span id="detail-model" data-i18n="no.model.data">No model data</span>
+          <span id="detail-records">-- <span data-i18n="records">records</span></span>
         </div>
         <div class="detail-line muted">
           <span id="detail-cost">--</span>
-          <span id="detail-cache">-- cache</span>
+          <span id="detail-cache">-- <span data-i18n="cache">cache</span></span>
         </div>
       </section>
 
-      <footer class="action-bar">
-        <button id="btn-refresh" class="action-btn primary interactive-button">Refresh</button>
-        <button id="btn-refresh-login" class="action-btn interactive-button">Login</button>
-        <button id="btn-config-folder" class="action-btn interactive-button">Config</button>
+      <footer class="action-bar account-actions">
+        <button id="btn-refresh" class="action-btn primary interactive-button" data-i18n="refresh">Refresh</button>
+        <button id="btn-refresh-login" class="action-btn interactive-button" data-i18n="login">Login</button>
+        <button id="btn-new-account" class="action-btn interactive-button" data-i18n="new">New</button>
+        <button id="btn-config-folder" class="action-btn interactive-button" data-i18n="config">Config</button>
       </footer>
 
       <section id="login-panel" class="login-panel" hidden>
         <div class="login-panel-header">
           <div>
-            <h2>Login with browser</h2>
-            <p>Sign in with your normal browser, then paste the OpenCode auth cookie value.</p>
+            <h2 data-i18n="login.with.browser">Login with browser</h2>
+            <p data-i18n="login.desc">Sign in with your normal browser, then paste the OpenCode auth cookie value.</p>
           </div>
-          <button id="btn-login-close" class="window-hide-btn interactive-button" type="button" aria-label="Close login panel">&times;</button>
+          <button id="btn-login-close" class="window-hide-btn interactive-button" type="button" aria-label="Close" data-i18n-aria="closing">&times;</button>
         </div>
 
         <ol class="login-steps">
-          <li>Click Open OpenCode and sign in with Google.</li>
-          <li>Press F12 in the browser.</li>
-          <li>Open Application &gt; Cookies &gt; https://opencode.ai.</li>
-          <li>Find the cookie named auth.</li>
-          <li>Copy only its Value and paste it below.</li>
+          <li data-i18n="step.1">Click Open OpenCode and sign in with Google.</li>
+          <li data-i18n="step.2">Press F12 in the browser.</li>
+          <li data-i18n="step.3">Open Application &gt; Cookies &gt; https://opencode.ai.</li>
+          <li data-i18n="step.4">Find the cookie named auth.</li>
+          <li data-i18n="step.5">Copy only its Value and paste it below.</li>
         </ol>
 
         <div class="workspace-id-row">
-          <label for="workspace-id-input">Workspace ID</label>
-          <input type="text" id="workspace-id-input" class="wid-input" spellcheck="false" autocomplete="off" placeholder="wrk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
-          <button id="btn-save-workspace-id" class="action-btn interactive-button" type="button">Save Workspace</button>
+          <label for="account-name-input" data-i18n="account.label">Account</label>
+          <input type="text" id="account-name-input" class="wid-input" spellcheck="false" autocomplete="off" data-i18n-placeholder="account.label">
+          <button id="btn-delete-account" class="action-btn interactive-button" type="button" data-i18n="delete">Delete</button>
         </div>
 
-        <textarea id="auth-cookie-input" class="cookie-input" spellcheck="false" autocomplete="off" placeholder="Paste auth value or full Cookie header"></textarea>
+        <div class="workspace-id-row">
+          <label for="workspace-id-input" data-i18n="workspace.id">Workspace ID</label>
+          <input type="text" id="workspace-id-input" class="wid-input" spellcheck="false" autocomplete="off" placeholder="wrk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+          <button id="btn-save-account-meta" class="action-btn interactive-button" type="button" data-i18n="save.account">Save Account</button>
+        </div>
+
+        <textarea id="auth-cookie-input" class="cookie-input" spellcheck="false" autocomplete="off" data-i18n-placeholder="auth.cookie.placeholder" placeholder="Paste auth value or full Cookie header"></textarea>
 
         <p id="login-message" class="login-message"></p>
 
         <div class="login-actions">
-          <button id="btn-open-browser-login" class="action-btn interactive-button" type="button">Open OpenCode</button>
-          <button id="btn-save-cookie" class="action-btn primary interactive-button" type="button">Save Cookie</button>
+          <button id="btn-open-browser-login" class="action-btn interactive-button" type="button" data-i18n="open.opencode">Open OpenCode</button>
+          <button id="btn-save-cookie" class="action-btn primary interactive-button" type="button" data-i18n="save.cookie">Save Cookie</button>
+        </div>
+      </section>
+
+      <section id="api-key-overlay" class="api-key-overlay" hidden>
+        <div class="api-key-overlay-header">
+          <h2 data-i18n="api.keys.title">API Keys</h2>
+          <button id="btn-close-api-keys" class="window-hide-btn interactive-button" type="button" aria-label="Close API Keys" data-i18n-aria="close.api.keys">&times;</button>
+        </div>
+        <div class="api-key-overlay-actions">
+          <button id="btn-refresh-api-keys" class="tiny-btn interactive-button" type="button" data-i18n="refresh">Refresh</button>
+        </div>
+        <div id="api-key-list" class="api-key-list"></div>
+        <div class="api-key-actions">
+          <input id="api-key-name-input" class="api-key-name-input" type="text" data-i18n-placeholder="create.unavailable" placeholder="Create unavailable" autocomplete="off" spellcheck="false" disabled>
+          <button id="btn-create-api-key" class="tiny-btn primary interactive-button" type="button" disabled data-i18n="create">Create</button>
         </div>
       </section>
     </main>

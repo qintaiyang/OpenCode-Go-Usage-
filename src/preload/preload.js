@@ -6,8 +6,18 @@ contextBridge.exposeInMainWorld('opencodeUsage', {
   openConfigFolder: () => ipcRenderer.invoke('app:open-config-folder'),
   openBrowserLogin: () => ipcRenderer.invoke('auth:open-browser-login'),
   saveAuthCookie: (params) => ipcRenderer.invoke('auth:save-cookie', params),
-  saveWorkspaceId: (workspaceId) => ipcRenderer.invoke('auth:save-workspace-id', workspaceId),
-  getConfig: () => ipcRenderer.invoke('config:get'),
+  // Account methods
+  listAccounts: () => ipcRenderer.invoke('accounts:list'),
+  switchAccount: (accountId) => ipcRenderer.invoke('accounts:switch', accountId),
+  saveAccount: (payload) => ipcRenderer.invoke('accounts:save', payload),
+  deleteAccount: (accountId) => ipcRenderer.invoke('accounts:delete', accountId),
+  // API Key methods
+  getApiKeyCapabilities: () => ipcRenderer.invoke('api-keys:capabilities'),
+  listApiKeys: (accountId) => ipcRenderer.invoke('api-keys:list', accountId),
+  copyApiKey: (payload) => ipcRenderer.invoke('api-keys:copy', payload),
+  createApiKey: (payload) => ipcRenderer.invoke('api-keys:create', payload),
+  removeApiKey: (payload) => ipcRenderer.invoke('api-keys:remove', payload),
+  // Push event listeners
   onUsageUpdated: (callback) => {
     const listener = (_event, payload) => callback(payload);
     ipcRenderer.on('usage:updated', listener);
